@@ -9,13 +9,19 @@ function App() {
     formData.append('interests', JSON.stringify(data.interests));
     formData.append('file', data.file);
 
-    // envia para o backend FastAPI
-    const res = await fetch('https://<seu-backend>/submit', {
-      method: 'POST',
-      body: formData,
-    });
-    if (res.ok) alert('Dados enviados!');
-    else alert('Falha no envio.');
+    try {
+      // Chama só o POST /submit
+      const res = await fetch('http://localhost:8000/submit', {
+        method: 'POST',
+        body: formData
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Falha no envio');
+      alert(json.message || 'Dados enviados!');
+    } catch (error) {
+      alert('Erro de conexão com o servidor. Verifique se o backend está rodando em http://localhost:8000');
+      console.error(error);
+    }
   };
 
   return (
