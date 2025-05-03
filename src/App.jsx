@@ -17,7 +17,7 @@ function App() {
         body: formData
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Falha no envio');
+      if (!res.ok) throw new Error(json.error || json.detail || 'Falha no envio');
       alert(json.message || 'Dados enviados!');
     } catch (error) {
       alert('Erro de conexão com o servidor. Verifique se o backend está rodando em http://localhost:8000');
