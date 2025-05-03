@@ -1,9 +1,11 @@
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 import json
 import os
 import logging
 import re
+import tweepy
 from PIL import Image  # New import for image processing with Pillow
 import pytesseract
 
@@ -17,6 +19,10 @@ logger = logging.getLogger(__name__)
 # → Imports para o SQLite/SQLModel
 from typing import List, Optional
 from sqlmodel import SQLModel, Field, Session, create_engine
+
+# Load environment variables and initialize Twitter client
+load_dotenv()
+client = tweepy.Client(bearer_token=os.getenv("TWITTER_BEARER_TOKEN"))
 
 app = FastAPI()
 
@@ -128,4 +134,16 @@ async def submit(
             "interests": interests_list,
             "file_saved_as": dest_path,
         },
+    }
+
+@app.get("/twitter/{handle}")
+async def get_twitter(handle: str):
+    resp = client.get_user(
+        username=handle,
+        user_fields=["id", "name", "public_metrics"]
+    )
+    tweets = client.get_users_tweets(resp.data.id, max_results=5)
+    return {
+        "profile": resp.data,
+        "recent_tweets": [t.text for t in tweets.data or []]
     }
