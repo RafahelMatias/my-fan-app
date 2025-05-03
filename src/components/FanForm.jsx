@@ -5,6 +5,8 @@ export default function FanForm({ onSubmit }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
+  const [address, setAddress] = useState('');
+  const [activities, setActivities] = useState('');
   const [interests, setInterests] = useState({
     'CS:GO': false,
     'FURIA': false,
@@ -26,19 +28,18 @@ export default function FanForm({ onSubmit }) {
 
   const handleSubmit = e => {
     e.preventDefault();
-
     const cleanedCpf = cpf.replace(/\D/g, '');
-
-    const cpfRegex = /^\d{11}$/; // Apenas 11 dígitos
+    const cpfRegex = /^\d{11}$/;
     if (!cpfRegex.test(cleanedCpf)) {
       alert('Por favor, insira um CPF válido com 11 dígitos.');
       return;
     }
-
     const payload = {
       name,
       email,
-      cpf: cleanedCpf, 
+      cpf: cleanedCpf,
+      address,
+      activities,
       interests: Object.keys(interests).filter(i => interests[i]),
       file,
     };
@@ -47,14 +48,14 @@ export default function FanForm({ onSubmit }) {
 
   return (
     <div className="form-with-logos">
-      <img 
-        src="/src/assets/furia-logo.png" 
-        alt="FURIA Logo" 
+      <img
+        src="/src/assets/furia-logo.png"
+        alt="FURIA Logo"
         className="side-logo left"
       />
       <form onSubmit={handleSubmit} className="form-container">
         <div className="form-group">
-          <label >Nome completo </label>
+          <label>Nome completo</label>
           <input
             type="text"
             value={name}
@@ -64,7 +65,7 @@ export default function FanForm({ onSubmit }) {
         </div>
 
         <div className="form-group">
-          <label>E-mail </label>
+          <label>E-mail</label>
           <input
             type="email"
             value={email}
@@ -74,14 +75,12 @@ export default function FanForm({ onSubmit }) {
         </div>
 
         <div className="form-group">
-          <label>CPF </label>
+          <label>CPF</label>
           <input
             type="text"
             value={cpf}
             onChange={e => {
-              // pega só dígitos e limita a 11 chars
               const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
-              // insere pontos e hífen conforme vamos tendo dígitos
               const withMask = digits
                 .replace(/^(\d{3})(\d)/, '$1.$2')
                 .replace(/^(\d{3}\.\d{3})(\d)/, '$1.$2')
@@ -90,6 +89,16 @@ export default function FanForm({ onSubmit }) {
             }}
             placeholder="000.000.000-00"
             title="Formato: 000.000.000-00"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Endereço</label>
+          <input
+            type="text"
+            value={address}
+            onChange={e => setAddress(e.target.value)}
             required
           />
         </div>
@@ -107,6 +116,18 @@ export default function FanForm({ onSubmit }) {
             </label>
           ))}
         </fieldset>
+
+        {/* ← Textarea movido para abaixo dos interesses */}
+        <div className="form-group activities-group">
+          <label>Atividades/Eventos/Compras</label>
+          <textarea
+            className="activities-textarea"
+            value={activities}
+            onChange={e => setActivities(e.target.value)}
+            rows={5}
+            required
+          />
+        </div>
 
         <div className="side-by-side-container">
           <div className="dropzone-container">

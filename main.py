@@ -34,6 +34,8 @@ class Fan(SQLModel, table=True):
     email: str
     cpf: str
     interests: str  # Armazena a lista como JSON serializado
+    address: str         # New field for Address
+    activities: str      # New field for Activities
 
 # Criação das tabelas na inicialização do aplicativo
 @app.on_event("startup")
@@ -52,6 +54,8 @@ async def submit(
     email: str = Form(...),
     cpf: str = Form(...),
     interests: str = Form(...),
+    address: str = Form(...),      # New Form field for Address
+    activities: str = Form(...),   # New Form field for Activities
     file: UploadFile = File(...),
 ):
     logger.info(f"Recebendo dados: name={name}, email={email}")
@@ -78,6 +82,8 @@ async def submit(
             email=email,
             cpf=cpf,
             interests=json.dumps(interests_list),  # Serializa para JSON
+            address=address,         # Persist Address
+            activities=activities,   # Persist Activities
         )
         session.add(fan)
         session.commit()
@@ -88,6 +94,8 @@ async def submit(
             "name": name,
             "email": email,
             "cpf": cpf,
+            "address": address,         # Return Address
+            "activities": activities,   # Return Activities
             "interests": interests_list,
             "file_saved_as": dest_path,
         },

@@ -6,11 +6,12 @@ function App() {
     formData.append('name', data.name);
     formData.append('email', data.email);
     formData.append('cpf', data.cpf);
+    formData.append('address', data.address);
+    formData.append('activities', data.activities);
     formData.append('interests', JSON.stringify(data.interests));
     formData.append('file', data.file);
 
     try {
-      // Chama só o POST /submit
       const res = await fetch('http://localhost:8000/submit', {
         method: 'POST',
         body: formData
