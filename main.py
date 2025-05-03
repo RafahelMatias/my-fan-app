@@ -39,9 +39,10 @@ class Fan(SQLModel, table=True):
     name: str
     email: str
     cpf: str
-    interests: str      # JSON serializado
-    address: str        # Endereço
-    activities: str     # Atividades/Eventos/Compras
+    interests: str      
+    address: str       
+    activities: str     
+    twitter: Optional[str] = Field(default=None)
 
 @app.on_event("startup")
 def on_startup():
@@ -60,6 +61,7 @@ async def submit(
     interests: str = Form(...),
     address: str = Form(...),
     activities: str = Form(...),
+    twitter: Optional[str] = Form(None),
     file: UploadFile = File(...),
 ):
     logger.info(f"Recebendo dados: name={name}, email={email}")
@@ -109,6 +111,7 @@ async def submit(
             interests=json.dumps(interests_list),
             address=address,
             activities=activities,
+            twitter=twitter,
         )
         session.add(fan)
         session.commit()
@@ -121,6 +124,7 @@ async def submit(
             "cpf": cleaned_form_cpf,
             "address": address,
             "activities": activities,
+            "twitter": twitter,
             "interests": interests_list,
             "file_saved_as": dest_path,
         },

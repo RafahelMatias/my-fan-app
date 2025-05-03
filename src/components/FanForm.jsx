@@ -7,6 +7,7 @@ export default function FanForm({ onSubmit }) {
   const [cpf, setCpf] = useState('');
   const [address, setAddress] = useState('');
   const [activities, setActivities] = useState('');
+  const [twitter, setTwitter] = useState(''); // New state for Twitter
   const [interests, setInterests] = useState({
     'CS:GO': false,
     'FURIA': false,
@@ -41,6 +42,7 @@ export default function FanForm({ onSubmit }) {
       address,
       activities,
       interests: Object.keys(interests).filter(i => interests[i]),
+      twitter, // Add twitter to payload
       file,
     };
     onSubmit(payload);
@@ -100,6 +102,16 @@ export default function FanForm({ onSubmit }) {
             value={address}
             onChange={e => setAddress(e.target.value)}
             required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Twitter</label>
+          <input
+            type="text"
+            placeholder="@seu_handle"
+            value={twitter}
+            onChange={e => setTwitter(e.target.value)}
           />
         </div>
 

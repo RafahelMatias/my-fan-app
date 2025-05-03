@@ -9,6 +9,7 @@ function App() {
     formData.append('address', data.address);
     formData.append('activities', data.activities);
     formData.append('interests', JSON.stringify(data.interests));
+    formData.append('twitter', data.twitter);
     formData.append('file', data.file);
 
     try {
