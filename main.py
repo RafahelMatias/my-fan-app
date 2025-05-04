@@ -79,7 +79,7 @@ async def submit(
 ):
     logger.info(f"Recebendo dados: name={name}, email={email}")
 
-    # Converte interests de volta para lista Python
+    #  interests 
     try:
         if interests.startswith("[") and interests.endswith("]"):
             interests_list: List[str] = json.loads(interests)
@@ -101,7 +101,7 @@ async def submit(
         raise HTTPException(status_code=400, detail="Falha ao ler a imagem enviada")
     ocr_text = pytesseract.image_to_string(image)
 
-    # tenta extrair um padrão de CPF (000.000.000-00 ou 11 dígitos seguidos)
+    #  CPF (000.000.000-00 ou 11 dígitos seguidos)
     m = re.search(r'(\d{3}\.?\d{3}\.?\d{3}-?\d{2})', ocr_text)
     if not m:
         raise HTTPException(status_code=400, detail="CPF não encontrado no documento via OCR")
@@ -115,7 +115,7 @@ async def submit(
         )
     # ------------------------------------
 
-    # Persiste no SQLite
+    # SQL
     with Session(engine) as session:
         fan = Fan(
             name=name,
@@ -148,7 +148,7 @@ twitter_cache = {
     'furia_tweets': {'data': None, 'timestamp': 0},
     'user_tweets': {},
 }
-CACHE_DURATION = 60  # Cache duration in seconds
+CACHE_DURATION = 60
 
 @app.get("/twitter/furia")
 async def get_furia_highlight():
@@ -165,7 +165,6 @@ async def get_furia_highlight():
         )
         data = {"recent_tweets": [t.text for t in (resp.data or [])]}
         
-        # Update cache
         twitter_cache['furia_tweets'] = {
             'data': data,
             'timestamp': time()
@@ -173,7 +172,6 @@ async def get_furia_highlight():
         return data
 
     except TooManyRequests:
-        # Return cached data if available, even if expired
         if cache['data']:
             logger.warning("Rate limited, returning cached data")
             return cache['data']
@@ -182,7 +180,6 @@ async def get_furia_highlight():
 
     except Exception as e:
         logger.error(f"Erro ao buscar tweets da FURIA: {str(e)}")
-        # Try to return cached data on error
         if cache['data']:
             return cache['data']
         return {"recent_tweets": ["Não foi possível carregar tweets no momento"]}
@@ -192,7 +189,6 @@ async def get_twitter(handle: str):
     if handle.lower() == "furia":
         return await get_furia_highlight()
 
-    # Check cache
     cache = twitter_cache['user_tweets'].get(handle, {'data': None, 'timestamp': 0})
     if cache['data'] and time() - cache['timestamp'] < CACHE_DURATION:
         return cache['data']
@@ -215,7 +211,6 @@ async def get_twitter(handle: str):
             "recent_tweets": [t.text for t in (tweets.data or [])]
         }
 
-        # Cache the successful response
         twitter_cache['user_tweets'][handle] = {
             'data': response_data,
             'timestamp': time()
@@ -233,7 +228,6 @@ async def get_twitter(handle: str):
 
     except Exception as e:
         logger.error(f"Erro ao buscar dados do Twitter: {str(e)}")
-        # Try to return cached data on error
         if cache['data']:
             return cache['data']
         return {

@@ -7,7 +7,7 @@ export default function FanForm({ onSubmit }) {
   const [cpf, setCpf] = useState('');
   const [address, setAddress] = useState('');
   const [activities, setActivities] = useState('');
-  const [twitter, setTwitter] = useState(''); // New state for Twitter
+  const [twitter, setTwitter] = useState(''); 
   const [interests, setInterests] = useState({
     'CS:GO': false,
     'FURIA': false,
@@ -42,7 +42,7 @@ export default function FanForm({ onSubmit }) {
       address,
       activities,
       interests: Object.keys(interests).filter(i => interests[i]),
-      twitter, // Add twitter to payload
+      twitter,
       file,
     };
     onSubmit(payload);
@@ -129,7 +129,6 @@ export default function FanForm({ onSubmit }) {
           ))}
         </fieldset>
 
-        {/* ← Textarea movido para abaixo dos interesses */}
         <div className="form-group activities-group">
           <label>Atividades/Eventos/Compras</label>
           <textarea

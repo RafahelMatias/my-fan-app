@@ -29,7 +29,6 @@ function App() {
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || json.detail || 'Falha no envio')
 
-      // se o usuário passou um handle, busca perfil e últimos tweets
       if (data.twitter) {
         try {
           const handle = data.twitter.replace(/^@/, '')

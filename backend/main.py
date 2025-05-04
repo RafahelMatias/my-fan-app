@@ -109,7 +109,7 @@ async def get_furia_tweets():
             tweet_fields=["text"]
         )
         return {
-            "recent_tweets": [t.text for t in (tweets.data or [])]  # Mudado de "highlighted" para "recent_tweets"
+            "recent_tweets": [t.text for t in (tweets.data or [])]  
         }
     except TooManyRequests:
         raise HTTPException(

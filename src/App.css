@@ -96,7 +96,7 @@ input[type="email"] {
   padding: 1.5rem;
   border: 2px solid #ddd;
   border-radius: 8px;
-  font-size: 2rem;
+  font-size: 1.2rem;
   background: white;
   color: #333;
 }
@@ -213,16 +213,13 @@ button[type="submit"]:hover {
   margin: 1.5rem 0;
 }
 
-/* ─────────── Aqui começa o bloco adicionado ─────────── */
 
-/* Container do textarea 50% mais largo que o restante */
 .activities-group {
-  width: 100%;       /* ajuste conforme largura do form */
+  width: 100%;       
   max-width: 100%;
   margin: 2rem auto;
 }
 
-/* Textarea ocupa 100% do container e texto 70% maior */
 .activities-textarea {
   width: 100%;
   font-size: 1.2em; 
@@ -234,12 +231,10 @@ button[type="submit"]:hover {
   display: block;
 }
 
-/* Opcional: espaçamento entre label e textarea */
 .activities-group label {
   margin-bottom: 1rem;
 }
 
-/* ─────────── Fim do bloco adicionado ─────────── */
 
 h1 {
   color: #1a1a1a;
