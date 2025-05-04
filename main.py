@@ -8,6 +8,9 @@ import re
 import tweepy
 from PIL import Image  # New import for image processing with Pillow
 import pytesseract
+from tweepy.errors import TooManyRequests
+from fastapi import HTTPException
+from time import time
 
 # Se o Windows não encontrar o executável do Tesseract, aponte aqui:
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -29,11 +32,15 @@ app = FastAPI()
 # CORS para desenvolvimento local
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Configure o engine e a pasta de uploads
 engine = create_engine("sqlite:///data.db")
@@ -136,14 +143,100 @@ async def submit(
         },
     }
 
+# Cache setup
+twitter_cache = {
+    'furia_tweets': {'data': None, 'timestamp': 0},
+    'user_tweets': {},
+}
+CACHE_DURATION = 60  # Cache duration in seconds
+
+@app.get("/twitter/furia")
+async def get_furia_highlight():
+    # Check cache first
+    cache = twitter_cache['furia_tweets']
+    if cache['data'] and time() - cache['timestamp'] < CACHE_DURATION:
+        return cache['data']
+
+    try:
+        resp = client.search_recent_tweets(
+            query="#FURIA",
+            max_results=10,
+            tweet_fields=["text"]
+        )
+        data = {"recent_tweets": [t.text for t in (resp.data or [])]}
+        
+        # Update cache
+        twitter_cache['furia_tweets'] = {
+            'data': data,
+            'timestamp': time()
+        }
+        return data
+
+    except TooManyRequests:
+        # Return cached data if available, even if expired
+        if cache['data']:
+            logger.warning("Rate limited, returning cached data")
+            return cache['data']
+        logger.error("Rate limited, no cached data available")
+        return {"recent_tweets": ["Temporariamente indisponível devido ao limite de requisições"]}
+
+    except Exception as e:
+        logger.error(f"Erro ao buscar tweets da FURIA: {str(e)}")
+        # Try to return cached data on error
+        if cache['data']:
+            return cache['data']
+        return {"recent_tweets": ["Não foi possível carregar tweets no momento"]}
+
 @app.get("/twitter/{handle}")
 async def get_twitter(handle: str):
-    resp = client.get_user(
-        username=handle,
-        user_fields=["id", "name", "public_metrics"]
-    )
-    tweets = client.get_users_tweets(resp.data.id, max_results=5)
-    return {
-        "profile": resp.data,
-        "recent_tweets": [t.text for t in tweets.data or []]
-    }
+    if handle.lower() == "furia":
+        return await get_furia_highlight()
+
+    # Check cache
+    cache = twitter_cache['user_tweets'].get(handle, {'data': None, 'timestamp': 0})
+    if cache['data'] and time() - cache['timestamp'] < CACHE_DURATION:
+        return cache['data']
+
+    try:
+        user = client.get_user(
+            username=handle,
+            user_fields=["name", "public_metrics"]
+        )
+        if not user.data:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+            
+        tweets = client.get_users_tweets(user.data.id, max_results=5)
+        
+        response_data = {
+            "profile": {
+                "name": user.data.name,
+                "public_metrics": user.data.public_metrics
+            },
+            "recent_tweets": [t.text for t in (tweets.data or [])]
+        }
+
+        # Cache the successful response
+        twitter_cache['user_tweets'][handle] = {
+            'data': response_data,
+            'timestamp': time()
+        }
+        return response_data
+
+    except TooManyRequests:
+        if cache['data']:
+            logger.warning(f"Rate limited for {handle}, returning cached data")
+            return cache['data']
+        return {
+            "profile": {"name": handle.replace("@", ""), "public_metrics": {"followers_count": 0}},
+            "recent_tweets": []
+        }
+
+    except Exception as e:
+        logger.error(f"Erro ao buscar dados do Twitter: {str(e)}")
+        # Try to return cached data on error
+        if cache['data']:
+            return cache['data']
+        return {
+            "profile": {"name": handle.replace("@", ""), "public_metrics": {"followers_count": 0}},
+            "recent_tweets": []
+        }
