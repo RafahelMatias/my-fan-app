@@ -1,3 +1,10 @@
+/*
+  Componente FanForm:
+  - Permite que o usuário insira seus dados pessoais, forma de contato e interesse.
+  - Inclui verificação de CPF e upload de documentos (imagem).
+  - Utiliza react-dropzone para facilitar o upload de arquivos.
+*/
+
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 
@@ -15,9 +22,11 @@ export default function FanForm({ onSubmit }) {
   });
   const [file, setFile] = useState(null);
 
+  // Alterna o interesse do usuário
   const toggleInterest = key =>
     setInterests(prev => ({ ...prev, [key]: !prev[key] }));
 
+  // Configuração do dropzone para upload de arquivos
   const onDrop = useCallback(acceptedFiles => {
     setFile(acceptedFiles[0]);
   }, []);
@@ -27,6 +36,7 @@ export default function FanForm({ onSubmit }) {
     multiple: false,
   });
 
+  // Validação simples do CPF e preparação dos dados para envio
   const handleSubmit = e => {
     e.preventDefault();
     const cleanedCpf = cpf.replace(/\D/g, '');
@@ -50,6 +60,7 @@ export default function FanForm({ onSubmit }) {
 
   return (
     <div className="form-with-logos">
+      {/* Logo exibida ao lado */}
       <img
         src="/src/assets/furia-logo.png"
         alt="FURIA Logo"

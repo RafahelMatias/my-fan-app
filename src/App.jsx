@@ -1,3 +1,11 @@
+/*
+  Este arquivo representa o componente principal do aplicativo "Know Your Fan".
+  Ele gerencia o estado dos dados vindos do backend, envia formulários e exibe:
+    - Dados do Twitter para o usuário e tweets recentes relacionados ao #FURIA.
+    - O formulário de entrada de dados dos fãs.
+  A lógica de requisições e tratamento de erros está implementada em handleFormSubmit.
+*/
+
 import { useState } from 'react'
 import FanForm from './components/FanForm'
 
@@ -6,11 +14,10 @@ function App() {
   const [furiaTweets, setFuriaTweets] = useState([])
 
   const handleFormSubmit = async (data) => {
-    // limpa estado anterior
+    // Limpa o estado anterior e monta os dados a enviar
     setTwitterData(null)
     setFuriaTweets([])
 
-    // monta FormData e envia /submit
     const formData = new FormData()
     formData.append('name', data.name)
     formData.append('email', data.email)
@@ -60,6 +67,7 @@ function App() {
 
       alert(json.message || 'Dados enviados!')
     } catch (error) {
+      // Tratamento de erro de conexão com o backend
       alert(
         'Erro de conexão com o servidor. Verifique se o backend está rodando em http://localhost:8000'
       )
@@ -71,7 +79,7 @@ function App() {
     <div>
       <h1>Know Your Fan</h1>
       <FanForm onSubmit={handleFormSubmit} />
-
+      {/* Exibe informações do Twitter caso existam */}
       {twitterData && twitterData.recent_tweets.length > 0 && (
         <div className="twitter-info">
           <h2>{twitterData.profile.name}</h2>
@@ -84,7 +92,7 @@ function App() {
           </ul>
         </div>
       )}
-
+      {/* Exibe tweets em destaque do #FURIA */}
       {furiaTweets.length > 0 && (
         <section style={{ marginTop: '2rem', textAlign: 'left' }}>
           <h2>Em destaque do #FURIA</h2>

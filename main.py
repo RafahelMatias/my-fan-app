@@ -1,3 +1,12 @@
+"""
+Este arquivo define o aplicativo principal usando FastAPI.
+Funcionalidades:
+  - Configura e executa as rotas para submissão do formulário e recuperação de dados do Twitter.
+  - Realiza processamento de imagem com OCR para validação do CPF.
+  - Armazena dados dos fãs em um banco SQLite utilizando SQLModel.
+  - Implementa cache simples para as requisições ao Twitter.
+"""
+
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv

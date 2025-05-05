@@ -1,3 +1,12 @@
+"""
+Este arquivo implementa o backend usando FastAPI para:
+  - Receber os dados do formulário enviado pelo cliente.
+  - Processar o upload e realizar OCR para validar o CPF.
+  - Consultar a API do Twitter para recuperar tweets e informações de perfil.
+  - Gerenciar exceções e respostas apropriadas.
+Também inclui configurações de CORS e logging.
+"""
+
 from fastapi import FastAPI, Form, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -20,11 +29,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Twitter client
+# Twitter client configuração com token do .env
 client = tweepy.Client(bearer_token=os.getenv("TWITTER_BEARER_TOKEN"))
 
 @app.get("/")
 async def root():
+    # Verificação simples de status do backend
     return {"status": "Backend está rodando!"}
 
 @app.post("/submit")
@@ -40,10 +50,8 @@ async def submit_form(
 ):
     try:
         logger.info(f"Recebendo dados: name={name}, email={email}")
-        
-        # Converte interests para lista
+        # Converte interests para uma lista
         interests_list = json.loads(interests) if interests.startswith("[") else [interests]
-        
         return {
             "status": "success",
             "message": "Dados recebidos com sucesso!",
@@ -65,24 +73,19 @@ async def submit_form(
 @app.get("/twitter/{handle}")
 async def get_twitter(handle: str):
     try:
-        # Remove @ se presente
+        # Remove @ se presente no handle
         username = handle.lstrip('@')
-        
-        # Busca usuário
         user = client.get_user(
             username=username,
             user_fields=["public_metrics"]
         )
         if not user.data:
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
-            
-        # Busca tweets
         tweets = client.get_users_tweets(
             user.data.id,
             max_results=5,
             tweet_fields=["text"]
         )
-        
         return {
             "profile": {
                 "name": username,
@@ -90,7 +93,6 @@ async def get_twitter(handle: str):
             },
             "recent_tweets": [t.text for t in (tweets.data or [])]
         }
-        
     except TooManyRequests:
         raise HTTPException(
             status_code=429,
@@ -100,7 +102,7 @@ async def get_twitter(handle: str):
         logger.error(f"Erro ao buscar dados do Twitter: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/twitter/furia")  # Removido /tweets do path
+@app.get("/twitter/furia")
 async def get_furia_tweets():
     try:
         tweets = client.search_recent_tweets(
