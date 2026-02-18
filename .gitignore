@@ -25,3 +25,13 @@ dist-ssr
 
 # Ignore env files containing secrets
 .env
+
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+
+clean_db.py

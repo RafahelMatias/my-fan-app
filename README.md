@@ -1,76 +1,54 @@
-# Know Your Fan
+# Know Your Fan (e-Sports CRM)
 
-**Know Your Fan**
+![React](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB?style=for-the-badge&logo=react)
+![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi)
+![Twitter API](https://img.shields.io/badge/Integration-Twitter%20API%20v2-1DA1F2?style=for-the-badge&logo=twitter)
+![OCR](https://img.shields.io/badge/Identity-Tesseract%20OCR-green?style=for-the-badge)
 
-> Objetivo: Desenvolver uma solução full-stack que colete o máximo de informações sobre você mesmo como fã de e-sports, incluindo:
-> 1. Dados básicos (nome, e-mail, CPF, endereço).  
-> 2. Interesses, atividades, eventos e compras do último ano.  
-> 3. Upload de documento (RG/CPF) com validação de identidade via OCR.  
-> 4. Vinculação de redes sociais (Twitter) e leitura de interações (seguidores, tweets).  
+## 📋 Project Overview
 
----
+A Full-Stack Customer Relationship Management (CRM) prototype designed for e-Sports organizations. The goal is to collect fan data, validate identities, and enrich profiles using social  media integration.
 
-## 📦 Tech Stack
+**Technical Context:**
+This project was developed as a **Coding Challenge** to demonstrate proficiency in connecting a modern Frontend (React) with a high-performance Python Backend (FastAPI). The challenge required building a system to validate user identity via image processing and fetch real-time social data.
 
-- **Frontend**  
-  - React & Vite  
-  - react-dropzone (upload)  
-  - Fetch API para comunicação JSON/FormData  
+## 🚀 Key Features
 
-- **Backend**  
-  - Python 3.9+  
-  - FastAPI + Uvicorn  
-  - SQLModel (SQLite)  
-  - python-dotenv (variáveis de ambiente)  
-  - OCR: Tesseract via `pytesseract` + Pillow  
-  - Social: Twitter API v2 via Tweepy  
+* **Automated Identity Validation (OCR):** Uses **Tesseract OCR** (`pytesseract`) to scan uploaded ID cards and programmatically verify if the printed CPF matches the user input.
+* **Social Intelligence:** Integrates with **Twitter API v2** (via `tweepy`) to fetch the fan's profile metrics and analyze their engagement (tweets) in real-time.
+* **Hashtag Tracking:** Automatically tracks specific e-sports tags (e.g., `#FURIA`) to display trending community discussions.
+* **Full-Stack Architecture:**
+    * **Frontend:** React (Vite) with `react-dropzone` for file handling.
+    * **Backend:** FastAPI (Python) serving REST endpoints.
+    * **Data Handling:** JSON/FormData communication and Identity Document processing.
 
-- **Storage**  
-  - SQLite (`data.db`)  
-  - Pasta `uploads/` para imagens de documentos  
+## 🛠️ Tech Stack
 
----
+### Frontend
+* **Framework:** React 18 (Vite)
+* **Styling:** CSS Modules
+* **Networking:** Fetch API
 
-## 🚀 Pré-requisitos
+### Backend
+* **Framework:** FastAPI (Python 3.9+)
+* **Server:** Uvicorn
+* **Integrations:** Tweepy (Twitter), Pytesseract (OCR), Python-Multipart (File Uploads)
 
-1. **Node.js** (v16+)  
-2. **Python 3.9+**  
-3. **Tesseract OCR**  
-   - Windows: baixe o instalador no repositório UB-Mannheim e garanta que `tesseract --version` funcione.  
-   - macOS/Linux: `brew install tesseract` ou `apt install tesseract-ocr`.  
-4. **Conta de Desenvolvedor Twitter** para gerar um **Bearer Token**.
+## 💻 How to Run
 
+### Prerequisites
+* Node.js (v16+)
+* Python 3.9+
+* Tesseract OCR installed on your system.
+* Twitter Developer Account (Bearer Token).
 
----
+### 1. Automatic Start (Windows)
+Simply run the `start.bat` file in the root directory.
 
-
-## ⚙️ Uso
-
-1. Preencha o formulário com seus dados  
-2. Faça upload da foto do RG/CPF  
-3. (Opcional) Informe seu handle do Twitter  
-4. Clique em **Enviar**
-
-O backend:
-- salva os dados no SQLite;
-- executa OCR no documento para validar o CPF;
-- consulta o Twitter (perfil + últimos tweets).
-
-O frontend exibe uma confirmação e os dados extraídos.
-
-
----
-
-
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 2. Manual Start
+**Backend:**
+```bash
+cd backend
+pip install -r ../requirements.txt
+# Create .env file with TWITTER_BEARER_TOKEN=your_token
+uvicorn main:app --reload 
