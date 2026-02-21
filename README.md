@@ -12,6 +12,18 @@ A Full-Stack Customer Relationship Management (CRM) prototype designed for e-Spo
 **Technical Context:**
 This project was developed as a **Coding Challenge** to demonstrate proficiency in connecting a modern Frontend (React) with a high-performance Python Backend (FastAPI). The challenge required building a system to validate user identity via image processing and fetch real-time social data.
 
+## 🤖 Development Methodology: AI-Assisted Prototyping
+
+This project was built leveraging modern **AI-Driven Development** workflows. Since the coding challenge explicitly encouraged the use of AI tools, my focus shifted from manual syntax typing to **Architecture, Product Engineering, and Prompt Orchestration**.
+
+Instead of simply generating code, I utilized a continuous, iterative loop to build the full-stack application:
+1. **Architectural Prompts:** I defined the separation of concerns between the React frontend and the Python (FastAPI) backend.
+2. **The Iterative Loop (Prompt, Analyze, Refine):** I instructed the AI to implement complex logic, such as the computer vision pipeline using Tesseract OCR and the Twitter API integration. 
+3. **Manual Debugging & Curation:** Once the AI provided the base structure, I analyzed the code for edge cases and errors. For example, when the raw OCR extraction failed to match user inputs, I manually rewrote the Python logic to clean and sanitize the data (removing formatting like dots and hyphens) before validation. I then used these manual corrections as context for my next prompts to the AI, maintaining a cycle of continuous improvement.
+
+This methodology allowed me to act as a Technical Lead over the AI, ensuring the final identity validation pipeline was secure, accurate, and ready for production.
+
+
 ## 🚀 Key Features
 
 * **Automated Identity Validation (OCR):** Uses **Tesseract OCR** (`pytesseract`) to scan uploaded ID cards and programmatically verify if the printed CPF matches the user input.
